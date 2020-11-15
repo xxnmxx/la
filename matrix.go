@@ -2,6 +2,7 @@ package la
 
 import (
 	"encoding/csv"
+	"fmt"
 	"io"
 	"log"
 	"os"
@@ -76,6 +77,19 @@ func appendElms(src []float64, dst *[]float64) {
 	}
 }
 
-func (m *Matrix) Output(o os.Stdout) {
+func (m *Matrix) Output(w io.Writer) {
 	var b strings.Builder
+	for i, v := range m.Data {
+		if (i+1)%m.Cols != 0 {
+			b.WriteString(fmt.Sprint(v) + " ")
+		} else {
+			if i+1 != len(m.Data) {
+				b.WriteString(fmt.Sprint(v) + "\n")
+			} else {
+				b.WriteString(fmt.Sprint(v))
+
+			}
+		}
+	}
+	fmt.Fprint(w, b.String())
 }
