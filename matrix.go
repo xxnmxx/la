@@ -50,10 +50,7 @@ func ImportCsv(p string) *Matrix {
 			log.Fatal("import error: shape unmatch")
 		}
 		elms := convToFloat(rec)
-		//for _, v := range elms {
-		//	data = append(data, v)
-		//}
-		appendElms(elms, &data)
+		appendElms(&data,elms)
 		rows++
 	}
 	return NewMat(data, rows, cols)
@@ -71,7 +68,7 @@ func convToFloat(s []string) []float64 {
 	return data
 }
 
-func appendElms(src []float64, dst *[]float64) {
+func appendElms(dst *[]float64, src []float64) {
 	for _, v := range src {
 		*dst = append(*dst, v)
 	}
