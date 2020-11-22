@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strconv"
 
 	"github.com/xxnmxx/la"
 )
@@ -12,18 +13,22 @@ func main() {
 	args := os.Args
 	// Dot
 	dotCmd := flag.NewFlagSet("dot", flag.ExitOnError)
-	dotDel := dotCmd.String("d", " ","set delimiter")
-	dotLazy := dotCmd.Bool("l",true,"set lazyquotes")
+	dotDel := dotCmd.String("d", " ", "set delimiter")
+	dotLazy := dotCmd.Bool("l", true, "set lazyquotes")
 	// Transpose
-	tCmd := flag.NewFlagSet("T",flag.ExitOnError)
-	tDel := tCmd.String("d", " ","set delimiter")
-	tLazy := tCmd.Bool("l",true,"set lazyquotes")
+	tCmd := flag.NewFlagSet("T", flag.ExitOnError)
+	tDel := tCmd.String("d", " ", "set delimiter")
+	tLazy := tCmd.Bool("l", true, "set lazyquotes")
 	// Add
-	addCmd := flag.NewFlagSet("add",flag.ExitOnError)
-	addDel := addCmd.String("d", " ","set delimiter")
-	addLazy := addCmd.Bool("l",true,"set lazyquotes")
+	addCmd := flag.NewFlagSet("add", flag.ExitOnError)
+	addDel := addCmd.String("d", " ", "set delimiter")
+	addLazy := addCmd.Bool("l", true, "set lazyquotes")
+	// ScalarMultiple
+	smlCmd := flag.NewFlagSet("sml", flag.ExitOnError)
+	smlDel := smlCmd.String("d", " ", "set delimiter")
+	smlLazy := smlCmd.Bool("l", true, "set lazyquotes")
 	if len(args) < 3 {
-		fmt.Println("subcmds: dot, T")
+		fmt.Println("subcmds: dot(file, file), T(file), smul(scalar file)")
 		os.Exit(1)
 	}
 	switch args[1] {
@@ -51,6 +56,22 @@ func main() {
 		b := la.ImportCsv(del[0], *addLazy, addArgs[1])
 		add := la.Add(a, b)
 		add.Output(os.Stdout)
+	case "sml":
+		smlCmd.Parse(args[2:])
+		smlArgs := smlCmd.Args()
+		if len(smlArgs) != 2 {
+			fmt.Println("need 2 args(float and file)")
+			os.Exit(1)
+		}
+		del := []rune(*smlDel)
+		s, err := strconv.ParseFloat(smlArgs[0], 64)
+		if err != nil {
+			fmt.Println("first arg must be a float")
+			os.Exit(1)
+		}
+		m := la.ImportCsv(del[0], *smlLazy, smlArgs[1])
+		sml := la.ScalarMultiple(s, m)
+		sml.Output(os.Stdout)
 	case "T":
 		tCmd.Parse(args[2:])
 		tArgs := tCmd.Args()
